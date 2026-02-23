@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>La Familia DE – Latino Community Deutschland</title>
+  <meta
+    name="description"
+    content="La Familia DE ist die größte Latino Community in Deutschland: News, Events auf der Deutschlandkarte und direkte Links zu WhatsApp, Instagram und den Gründern."
+  />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Pacifico&display=swap"
+    rel="stylesheet"
+  />
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="hero">
+    <div class="overlay"></div>
+    <nav class="top-nav container">
+      <h1 class="brand">La Familia DE</h1>
+      <a class="cta-pill" href="https://chat.whatsapp.com/Edw1f72kqQkHcaEIGsy6ge?utm_source=igios&utm_campaign=wa_communities_url_xma&source_surface=25" target="_blank" rel="noopener noreferrer">
+        WhatsApp Community
+      </a>
+    </nav>
+
+    <section class="hero-content container">
+      <p class="label">Die größte Latino Community in Deutschland</p>
+      <h2>Noticias, Eventos y Buena Vibra ✨</h2>
+      <p>
+        Willkommen bei <strong>La Familia DE</strong> – dein Ort für Latino-News,
+        deutschlandweite Events und direkte Verbindungen zur Community.
+      </p>
+      <div class="hero-links">
+        <a href="https://www.instagram.com/la_familia.de?igsh=MWZxd2RjMWV0aXFsaw%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer">Instagram Community</a>
+        <a href="https://chat.whatsapp.com/Edw1f72kqQkHcaEIGsy6ge?utm_source=igios&utm_campaign=wa_communities_url_xma&source_surface=25" target="_blank" rel="noopener noreferrer">Jetzt WhatsApp beitreten</a>
+      </div>
+    </section>
+  </header>
+
+  <main>
+    <section class="news container card">
+      <div>
+        <p class="section-tag">News</p>
+        <h3>Was ist gerade los in der Community?</h3>
+        <p>
+          Hier findest du aktuelle Updates, Event-Highlights und Community-News von
+          <strong>La Familia DE</strong>. Folge uns auf Instagram, um keine Stories,
+          Reels oder Event-Announcements zu verpassen.
+        </p>
+      </div>
+      <a class="btn" href="https://www.instagram.com/la_familia.de?igsh=MWZxd2RjMWV0aXFsaw%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer">Zu den News auf Instagram</a>
+    </section>
+
+    <section class="map-section container">
+      <div class="map-header">
+        <p class="section-tag">Events Karte</p>
+        <h3>Latino Events in ganz Deutschland</h3>
+        <p>Klicke auf die Marker, um Event-Beispiele in verschiedenen Städten zu sehen.</p>
+      </div>
+      <div id="map" aria-label="Deutschlandkarte mit Event-Markern"></div>
+    </section>
+
+    <section class="community container card split">
+      <div>
+        <p class="section-tag">Community</p>
+        <h3>Verbinde dich mit La Familia</h3>
+        <p>
+          Werde Teil der größten Latino Community in Deutschland und connecte dich
+          direkt über WhatsApp und Social Media.
+        </p>
+      </div>
+      <div class="links-grid">
+        <a class="btn" href="https://chat.whatsapp.com/Edw1f72kqQkHcaEIGsy6ge?utm_source=igios&utm_campaign=wa_communities_url_xma&source_surface=25" target="_blank" rel="noopener noreferrer">WhatsApp Community</a>
+        <a class="btn ghost" href="https://www.instagram.com/la_familia.de?igsh=MWZxd2RjMWV0aXFsaw%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer">La Familia Instagram</a>
+      </div>
+    </section>
+
+    <section class="founder container card">
+      <p class="section-tag">Gründer</p>
+      <h3>Giovanni Oderso</h3>
+      <div class="founder-links">
+        <a href="https://www.instagram.com/giovanni_mogito?igsh=ZmRjMzhkZmtueWMx" target="_blank" rel="noopener noreferrer">Instagram</a>
+        <a href="https://www.tiktok.com/@giovannioderso?_r=1&_t=ZG-94A7AY2WstN" target="_blank" rel="noopener noreferrer">TikTok</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>Hecho con ❤️ y sabor latino • La Familia DE</p>
+  </footer>
+
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""
+  ></script>
+  <script src="script.js"></script>
+</body>
+</html>

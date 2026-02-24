@@ -9,7 +9,7 @@
 <body data-page="start">
   <header class="site-header">
     <div class="container nav-wrap">
-      <div class="logo-badge">🌴 La Familia</div>
+      <a class="logo-badge" href="index.html">La Familia</a>
       <button id="menu-toggle" class="menu-toggle">☰</button>
       <nav id="site-nav" class="site-nav">
         <a href="index.html">Startseite</a>
@@ -17,14 +17,32 @@
         <a href="gallery.html">Galerie</a>
         <a href="about.html">Über uns</a>
       </nav>
-      <button id="logout-btn" class="btn tiny">Abmelden</button>
+      <div class="profile-shell">
+        <button id="profile-trigger" class="profile-trigger" aria-label="Profil öffnen">
+          <img src="assets/logo.svg" alt="La Familia Logo" />
+        </button>
+        <div id="profile-dropdown" class="profile-dropdown">
+          <p id="profile-name">@user</p>
+          <button id="edit-profile-btn" class="menu-action" type="button">Profil bearbeiten</button>
+          <button id="logout-btn" class="menu-action danger" type="button">Abmelden</button>
+        </div>
+      </div>
     </div>
   </header>
 
   <main class="container app-shell">
-    <section class="card">
+    <section class="card hero-card">
+      <img class="hero-logo" src="assets/logo.svg" alt="La Familia Latino-German Community Logo" />
       <h1>Bienvenidos a La Familia DE</h1>
-      <p>Die größte Latino Community in Deutschland.</p>
+      <p>
+        Diese Website ist der zentrale Treffpunkt der größten Latino Community in Deutschland.
+        Hier findest du aktuelle News, Events in verschiedenen Städten, Community-Austausch
+        und eine Galerie mit Erinnerungen unserer Familia.
+      </p>
+      <p>
+        Unser Ziel: Menschen verbinden, Kultur feiern und gemeinsam wachsen – mit Respekt,
+        guter Energie und echtem Latino Spirit.
+      </p>
       <div class="quick-links">
         <a class="btn" href="https://www.instagram.com/la_familia.de?igsh=MWZxd2RjMWV0aXFsaw%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer">Instagram Community</a>
         <a class="btn" href="https://chat.whatsapp.com/Edw1f72kqQkHcaEIGsy6ge?utm_source=igios&utm_campaign=wa_communities_url_xma&source_surface=25" target="_blank" rel="noopener noreferrer">WhatsApp Community</a>

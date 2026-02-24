@@ -4,6 +4,8 @@ const LS_SESSION_KEY = 'lafamilia_session_fallback';
 const LS_GALLERY_KEY = 'lafamilia_gallery_fallback';
 const ADMIN_USERS = ['admin', 'giovanni', 'giovanni_mogito'];
 
+let backendAvailable = true;
+
 const readJSON = (key, fallback) => {
   try {
     const raw = localStorage.getItem(key);
@@ -12,14 +14,11 @@ const readJSON = (key, fallback) => {
     return fallback;
   }
 };
-
 const writeJSON = (key, value) => localStorage.setItem(key, JSON.stringify(value));
 
 const getToken = () => localStorage.getItem(TOKEN_KEY);
-const setToken = (t) => localStorage.setItem(TOKEN_KEY, t);
+const setToken = (token) => localStorage.setItem(TOKEN_KEY, token);
 const clearToken = () => localStorage.removeItem(TOKEN_KEY);
-
-let backendAvailable = true;
 
 const api = async (path, method = 'GET', body) => {
   try {
@@ -28,49 +27,52 @@ const api = async (path, method = 'GET', body) => {
       headers: body ? { 'Content-Type': 'application/json' } : undefined,
       body: body ? JSON.stringify(body) : undefined,
     });
-
     const contentType = res.headers.get('content-type') || '';
-    const payload = contentType.includes('application/json') ? await res.json() : {};
-
-    if (!res.ok) throw new Error(payload.error || 'Fehler');
+    const data = contentType.includes('application/json') ? await res.json() : {};
+    if (!res.ok) throw new Error(data.error || 'Fehler');
     backendAvailable = true;
-    return payload;
+    return data;
   } catch (err) {
     backendAvailable = false;
     throw err;
   }
 };
 
-function fallbackRegister({ username, password, origin, state }) {
+function fallbackRegister(payload) {
   const users = readJSON(LS_USERS_KEY, []);
-  if (users.some((u) => u.username.toLowerCase() === String(username).toLowerCase())) {
+  if (users.some((u) => u.username.toLowerCase() === String(payload.username).toLowerCase())) {
     throw new Error('Username ist schon vergeben.');
   }
-  const user = { username: String(username).trim(), password: String(password), origin: String(origin).trim(), state: String(state).trim() };
+  const user = {
+    username: String(payload.username).trim(),
+    password: String(payload.password),
+    origin: String(payload.origin).trim(),
+    state: String(payload.state).trim(),
+  };
   users.push(user);
   writeJSON(LS_USERS_KEY, users);
-  const session = { mode: 'user', username: user.username };
-  writeJSON(LS_SESSION_KEY, session);
-  setToken(`fallback:${user.username}`);
-  return { token: getToken(), username: user.username, mode: 'user' };
+  writeJSON(LS_SESSION_KEY, { mode: 'user', username: user.username, origin: user.origin, state: user.state });
+  const token = `fallback:${user.username}`;
+  setToken(token);
+  return { token };
 }
 
-function fallbackLogin({ username, password }) {
+function fallbackLogin(payload) {
   const users = readJSON(LS_USERS_KEY, []);
-  const found = users.find((u) => u.username.toLowerCase() === String(username).toLowerCase());
+  const found = users.find((u) => u.username.toLowerCase() === String(payload.username).toLowerCase());
   if (!found) throw new Error('Konto existiert nicht.');
-  if (found.password !== String(password)) throw new Error('Code/Passwort ist falsch.');
-  const session = { mode: 'user', username: found.username };
-  writeJSON(LS_SESSION_KEY, session);
-  setToken(`fallback:${found.username}`);
-  return { token: getToken(), username: found.username, mode: 'user' };
+  if (found.password !== String(payload.password)) throw new Error('Code/Passwort ist falsch.');
+  writeJSON(LS_SESSION_KEY, { mode: 'user', username: found.username, origin: found.origin, state: found.state });
+  const token = `fallback:${found.username}`;
+  setToken(token);
+  return { token };
 }
 
 function fallbackGuest() {
-  const session = { mode: 'guest', username: 'guest' };
-  writeJSON(LS_SESSION_KEY, session);
-  setToken('fallback:guest');
-  return { token: 'fallback:guest', username: 'guest', mode: 'guest' };
+  writeJSON(LS_SESSION_KEY, { mode: 'guest', username: 'guest' });
+  const token = 'fallback:guest';
+  setToken(token);
+  return { token };
 }
 
 function fallbackSession() {
@@ -82,48 +84,34 @@ function fallbackLogout() {
   clearToken();
 }
 
+function fallbackUpdateProfile(session, { origin, state, password }) {
+  const users = readJSON(LS_USERS_KEY, []);
+  const idx = users.findIndex((u) => u.username === session.username);
+  if (idx < 0) throw new Error('User nicht gefunden.');
+  users[idx].origin = origin;
+  users[idx].state = state;
+  if (password) users[idx].password = password;
+  writeJSON(LS_USERS_KEY, users);
+  writeJSON(LS_SESSION_KEY, { ...session, origin, state });
+}
+
 function fallbackGalleryList(session) {
   const items = readJSON(LS_GALLERY_KEY, []);
-  const isAdmin = !!session && session.mode === 'user' && ADMIN_USERS.includes(String(session.username).toLowerCase());
+  const isAdmin = session?.mode === 'user' && ADMIN_USERS.includes(String(session.username).toLowerCase());
   return { items, isAdmin };
 }
 
 function fallbackGalleryUpload(session, fileName) {
-  if (!session || session.mode !== 'user') throw new Error('Bitte anmelden.');
   const items = readJSON(LS_GALLERY_KEY, []);
   items.unshift({ id: Date.now(), username: session.username, file_name: fileName, status: 'pending' });
   writeJSON(LS_GALLERY_KEY, items);
 }
 
 function fallbackGalleryModerate(session, id, status) {
-  const isAdmin = !!session && session.mode === 'user' && ADMIN_USERS.includes(String(session.username).toLowerCase());
+  const isAdmin = session?.mode === 'user' && ADMIN_USERS.includes(String(session.username).toLowerCase());
   if (!isAdmin) throw new Error('Nur Admins.');
   const items = readJSON(LS_GALLERY_KEY, []).map((i) => (i.id === id ? { ...i, status } : i));
   writeJSON(LS_GALLERY_KEY, items);
-}
-
-function setupNav() {
-  const menu = document.getElementById('menu-toggle');
-  const nav = document.getElementById('site-nav');
-  const logout = document.getElementById('logout-btn');
-
-  if (menu && nav) menu.onclick = () => nav.classList.toggle('open');
-
-  if (logout) {
-    logout.onclick = async () => {
-      if (backendAvailable) {
-        try {
-          await api('/api/logout', 'POST', { token: getToken() });
-        } catch {
-          fallbackLogout();
-        }
-      } else {
-        fallbackLogout();
-      }
-      clearToken();
-      location.href = 'auth.html';
-    };
-  }
 }
 
 function setupAuthPage() {
@@ -138,30 +126,19 @@ function setupAuthPage() {
     if (tab === 'guest') document.getElementById('guest-pane').classList.add('active');
     msg.textContent = '';
   };
-
-  document.querySelectorAll('[data-auth-tab]').forEach((btn) => {
-    btn.onclick = () => setTab(btn.dataset.authTab);
-  });
+  document.querySelectorAll('[data-auth-tab]').forEach((btn) => (btn.onclick = () => setTab(btn.dataset.authTab)));
 
   document.getElementById('login-form').onsubmit = async (e) => {
     e.preventDefault();
     const d = new FormData(e.target);
     const payload = { username: d.get('username'), password: d.get('password') };
-
     try {
       let data;
-      if (backendAvailable) {
-        try {
-          data = await api('/api/login', 'POST', payload);
-        } catch (err) {
-          if (String(err.message).includes('Failed to fetch') || String(err.message) === 'Fehler') {
-            data = fallbackLogin(payload);
-          } else {
-            throw err;
-          }
-        }
-      } else {
-        data = fallbackLogin(payload);
+      try {
+        data = await api('/api/login', 'POST', payload);
+      } catch (err) {
+        if (String(err.message).includes('Failed to fetch') || String(err.message) === 'Fehler') data = fallbackLogin(payload);
+        else throw err;
       }
       setToken(data.token);
       location.href = 'index.html';
@@ -173,27 +150,14 @@ function setupAuthPage() {
   document.getElementById('register-form').onsubmit = async (e) => {
     e.preventDefault();
     const d = new FormData(e.target);
-    const payload = {
-      username: d.get('username'),
-      password: d.get('password'),
-      origin: d.get('origin'),
-      state: d.get('state'),
-    };
-
+    const payload = { username: d.get('username'), password: d.get('password'), origin: d.get('origin'), state: d.get('state') };
     try {
       let data;
-      if (backendAvailable) {
-        try {
-          data = await api('/api/register', 'POST', payload);
-        } catch (err) {
-          if (String(err.message).includes('Failed to fetch') || String(err.message) === 'Fehler') {
-            data = fallbackRegister(payload);
-          } else {
-            throw err;
-          }
-        }
-      } else {
-        data = fallbackRegister(payload);
+      try {
+        data = await api('/api/register', 'POST', payload);
+      } catch (err) {
+        if (String(err.message).includes('Failed to fetch') || String(err.message) === 'Fehler') data = fallbackRegister(payload);
+        else throw err;
       }
       setToken(data.token);
       location.href = 'index.html';
@@ -205,17 +169,9 @@ function setupAuthPage() {
   document.getElementById('continue-guest').onclick = async () => {
     try {
       let data;
-      if (backendAvailable) {
-        try {
-          data = await api('/api/guest', 'POST', {});
-        } catch (err) {
-          if (String(err.message).includes('Failed to fetch') || String(err.message) === 'Fehler') {
-            data = fallbackGuest();
-          } else {
-            throw err;
-          }
-        }
-      } else {
+      try {
+        data = await api('/api/guest', 'POST', {});
+      } catch {
         data = fallbackGuest();
       }
       setToken(data.token);
@@ -240,40 +196,95 @@ async function resolveSession() {
       const { session } = await api(`/api/session?token=${encodeURIComponent(token)}`);
       if (session) return session;
     } catch {
-      // Backend not reachable -> try fallback session
+      // fallback below
     }
   }
 
-  const session = fallbackSession();
-  if (!session) {
+  const local = fallbackSession();
+  if (!local) {
     clearToken();
     location.href = 'auth.html';
     return null;
   }
+  return local;
+}
 
-  return session;
+function setupNavAndProfile(session) {
+  const menu = document.getElementById('menu-toggle');
+  const nav = document.getElementById('site-nav');
+  if (menu && nav) menu.onclick = () => nav.classList.toggle('open');
+
+  const profileTrigger = document.getElementById('profile-trigger');
+  const profileDropdown = document.getElementById('profile-dropdown');
+  const profileName = document.getElementById('profile-name');
+  const editProfileBtn = document.getElementById('edit-profile-btn');
+  const logoutBtn = document.getElementById('logout-btn');
+
+  if (profileName) profileName.textContent = session.mode === 'guest' ? 'Gast' : `@${session.username}`;
+
+  if (profileTrigger && profileDropdown) {
+    profileTrigger.onclick = () => profileDropdown.classList.toggle('open');
+    document.addEventListener('click', (e) => {
+      if (!profileDropdown.contains(e.target) && !profileTrigger.contains(e.target)) profileDropdown.classList.remove('open');
+    });
+  }
+
+  if (editProfileBtn) {
+    editProfileBtn.style.display = session.mode === 'guest' ? 'none' : 'block';
+    editProfileBtn.onclick = async () => {
+      const newOrigin = prompt('Neue Herkunft:', session.origin || '');
+      if (newOrigin === null) return;
+      const newState = prompt('Neues Bundesland:', session.state || '');
+      if (newState === null) return;
+      const newPassword = prompt('Neues Passwort (leer lassen = unverändert):', '');
+
+      try {
+        if (!getToken()?.startsWith('fallback:')) {
+          await api('/api/profile', 'POST', {
+            token: getToken(),
+            origin: newOrigin.trim(),
+            state: newState.trim(),
+            password: (newPassword || '').trim(),
+          });
+        } else {
+          fallbackUpdateProfile(session, { origin: newOrigin.trim(), state: newState.trim(), password: (newPassword || '').trim() });
+        }
+        alert('Profil gespeichert.');
+      } catch (err) {
+        try {
+          fallbackUpdateProfile(session, { origin: newOrigin.trim(), state: newState.trim(), password: (newPassword || '').trim() });
+          alert('Profil lokal gespeichert (Fallback).');
+        } catch {
+          alert(err.message || 'Profil konnte nicht gespeichert werden.');
+        }
+      }
+    };
+  }
+
+  if (logoutBtn) {
+    logoutBtn.onclick = async () => {
+      try {
+        if (!getToken()?.startsWith('fallback:')) await api('/api/logout', 'POST', { token: getToken() });
+      } catch {
+        // ignore and fallback
+      }
+      fallbackLogout();
+      location.href = 'auth.html';
+    };
+  }
 }
 
 function initMap(session) {
   const mapEl = document.getElementById('map');
   if (!mapEl || typeof L === 'undefined') return;
 
-  const map = L.map('map', {
-    scrollWheelZoom: false,
-    zoomControl: true,
-    minZoom: 5,
-    maxZoom: 12,
-  }).setView([51.2, 10.45], 6);
-
+  const map = L.map('map', { scrollWheelZoom: false, minZoom: 5, maxZoom: 12 }).setView([51.2, 10.45], 6);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap' }).addTo(map);
-
   [
     ['Berlin', [52.52, 13.405], 'Reggaeton Night'],
     ['Hamburg', [53.5511, 9.9937], 'Salsa Social'],
     ['Köln', [50.9375, 6.9603], 'Latin Street Food'],
-  ].forEach(([city, coords, title]) => {
-    L.marker(coords).addTo(map).bindPopup(`<strong>${title}</strong><br>${city}`);
-  });
+  ].forEach(([city, coords, title]) => L.marker(coords).addTo(map).bindPopup(`<strong>${title}</strong><br>${city}`));
 
   if (session.mode === 'guest') {
     map.dragging.disable();
@@ -281,17 +292,6 @@ function initMap(session) {
     map.doubleClickZoom.disable();
     map.boxZoom.disable();
     map.keyboard.disable();
-  }
-}
-
-async function loadGalleryData(session) {
-  if (!backendAvailable || getToken()?.startsWith('fallback:')) {
-    return fallbackGalleryList(session);
-  }
-  try {
-    return await api(`/api/gallery?token=${encodeURIComponent(getToken())}`);
-  } catch {
-    return fallbackGalleryList(session);
   }
 }
 
@@ -303,8 +303,17 @@ async function initGallery(session) {
   const pending = document.getElementById('pending-list');
   const review = document.getElementById('admin-review');
 
+  const getData = async () => {
+    if (getToken()?.startsWith('fallback:')) return fallbackGalleryList(session);
+    try {
+      return await api(`/api/gallery?token=${encodeURIComponent(getToken())}`);
+    } catch {
+      return fallbackGalleryList(session);
+    }
+  };
+
   const render = async () => {
-    const { items, isAdmin } = await loadGalleryData(session);
+    const { items, isAdmin } = await getData();
     approved.innerHTML = '';
     pending.innerHTML = '';
     review.innerHTML = '';
@@ -326,34 +335,20 @@ async function initGallery(session) {
         block.innerHTML = `<strong>${i.file_name}</strong> von @${i.username}`;
 
         const approve = document.createElement('button');
-        approve.className = 'btn tiny';
+        approve.className = 'btn';
         approve.textContent = 'Freigeben';
         approve.onclick = async () => {
-          try {
-            if (!backendAvailable || getToken()?.startsWith('fallback:')) {
-              fallbackGalleryModerate(session, i.id, 'approved');
-            } else {
-              await api('/api/gallery/moderate', 'POST', { token: getToken(), id: i.id, status: 'approved' });
-            }
-          } catch {
-            fallbackGalleryModerate(session, i.id, 'approved');
-          }
+          if (getToken()?.startsWith('fallback:')) fallbackGalleryModerate(session, i.id, 'approved');
+          else await api('/api/gallery/moderate', 'POST', { token: getToken(), id: i.id, status: 'approved' });
           render();
         };
 
         const reject = document.createElement('button');
-        reject.className = 'btn tiny ghost';
+        reject.className = 'btn ghost';
         reject.textContent = 'Ablehnen';
         reject.onclick = async () => {
-          try {
-            if (!backendAvailable || getToken()?.startsWith('fallback:')) {
-              fallbackGalleryModerate(session, i.id, 'rejected');
-            } else {
-              await api('/api/gallery/moderate', 'POST', { token: getToken(), id: i.id, status: 'rejected' });
-            }
-          } catch {
-            fallbackGalleryModerate(session, i.id, 'rejected');
-          }
+          if (getToken()?.startsWith('fallback:')) fallbackGalleryModerate(session, i.id, 'rejected');
+          else await api('/api/gallery/moderate', 'POST', { token: getToken(), id: i.id, status: 'rejected' });
           render();
         };
 
@@ -369,19 +364,11 @@ async function initGallery(session) {
   form.onsubmit = async (e) => {
     e.preventDefault();
     if (session.mode === 'guest') return;
-
     const file = form.querySelector('input[name="image"]').files?.[0];
     if (!file) return;
 
-    try {
-      if (!backendAvailable || getToken()?.startsWith('fallback:')) {
-        fallbackGalleryUpload(session, file.name);
-      } else {
-        await api('/api/gallery/upload', 'POST', { token: getToken(), fileName: file.name });
-      }
-    } catch {
-      fallbackGalleryUpload(session, file.name);
-    }
+    if (getToken()?.startsWith('fallback:')) fallbackGalleryUpload(session, file.name);
+    else await api('/api/gallery/upload', 'POST', { token: getToken(), fileName: file.name });
 
     form.reset();
     render();
@@ -391,14 +378,13 @@ async function initGallery(session) {
 }
 
 (async function init() {
-  setupNav();
   setupAuthPage();
 
   const session = await resolveSession();
   if (!session) return;
 
   document.body.classList.toggle('is-guest', session.mode === 'guest');
-
+  setupNavAndProfile(session);
   initMap(session);
   initGallery(session);
 })();

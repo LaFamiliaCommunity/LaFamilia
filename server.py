@@ -12,7 +12,8 @@ ADMIN_USERS = {'admin', 'giovanni_mogito', 'giovanni'}
 def init_db():
     conn = sqlite3.connect(DB_PATH)
     cur = conn.cursor()
-    cur.execute('''
+    cur.execute(
+        '''
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT UNIQUE NOT NULL,
@@ -20,22 +21,27 @@ def init_db():
             origin TEXT NOT NULL,
             state TEXT NOT NULL
         )
-    ''')
-    cur.execute('''
+        '''
+    )
+    cur.execute(
+        '''
         CREATE TABLE IF NOT EXISTS sessions (
             token TEXT PRIMARY KEY,
             username TEXT NOT NULL,
             mode TEXT NOT NULL
         )
-    ''')
-    cur.execute('''
+        '''
+    )
+    cur.execute(
+        '''
         CREATE TABLE IF NOT EXISTS gallery (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT NOT NULL,
             file_name TEXT NOT NULL,
             status TEXT NOT NULL DEFAULT 'pending'
         )
-    ''')
+        '''
+    )
     conn.commit()
     conn.close()
 
@@ -63,7 +69,15 @@ class Handler(SimpleHTTPRequestHandler):
         conn = sqlite3.connect(DB_PATH)
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
-        cur.execute('SELECT token, username, mode FROM sessions WHERE token = ?', (token,))
+        cur.execute(
+            '''
+            SELECT s.token, s.username, s.mode, u.origin, u.state
+            FROM sessions s
+            LEFT JOIN users u ON u.username = s.username
+            WHERE s.token = ?
+            ''',
+            (token,),
+        )
         row = cur.fetchone()
         conn.close()
         return dict(row) if row else None
@@ -85,7 +99,10 @@ class Handler(SimpleHTTPRequestHandler):
                 conn.close()
                 return self._json(409, {'error': 'Username ist schon vergeben.'})
 
-            cur.execute('INSERT INTO users (username, password, origin, state) VALUES (?, ?, ?, ?)', (username, password, origin, state))
+            cur.execute(
+                'INSERT INTO users (username, password, origin, state) VALUES (?, ?, ?, ?)',
+                (username, password, origin, state),
+            )
             token = secrets.token_urlsafe(24)
             cur.execute('INSERT INTO sessions (token, username, mode) VALUES (?, ?, ?)', (token, username, 'user'))
             conn.commit()
@@ -125,11 +142,32 @@ class Handler(SimpleHTTPRequestHandler):
             return self._json(200, {'token': token, 'username': 'guest', 'mode': 'guest'})
 
         if self.path == '/api/logout':
-            data = self._read_json()
-            token = data.get('token')
+            token = self._read_json().get('token')
             conn = sqlite3.connect(DB_PATH)
             cur = conn.cursor()
             cur.execute('DELETE FROM sessions WHERE token = ?', (token,))
+            conn.commit()
+            conn.close()
+            return self._json(200, {'ok': True})
+
+        if self.path == '/api/profile':
+            data = self._read_json()
+            session = self._session(data.get('token'))
+            if not session or session['mode'] != 'user':
+                return self._json(403, {'error': 'Bitte anmelden.'})
+
+            origin = (data.get('origin') or '').strip()
+            state = (data.get('state') or '').strip()
+            password = (data.get('password') or '').strip()
+            if not all([origin, state]):
+                return self._json(400, {'error': 'Herkunft und Bundesland sind erforderlich.'})
+
+            conn = sqlite3.connect(DB_PATH)
+            cur = conn.cursor()
+            if password:
+                cur.execute('UPDATE users SET origin=?, state=?, password=? WHERE username=?', (origin, state, password, session['username']))
+            else:
+                cur.execute('UPDATE users SET origin=?, state=? WHERE username=?', (origin, state, session['username']))
             conn.commit()
             conn.close()
             return self._json(200, {'ok': True})
@@ -169,6 +207,7 @@ class Handler(SimpleHTTPRequestHandler):
 
     def do_GET(self):
         parsed = urlparse(self.path)
+
         if parsed.path == '/api/session':
             token = parse_qs(parsed.query).get('token', [None])[0]
             session = self._session(token)
@@ -183,10 +222,13 @@ class Handler(SimpleHTTPRequestHandler):
             cur.execute('SELECT id, username, file_name, status FROM gallery ORDER BY id DESC')
             rows = [dict(r) for r in cur.fetchall()]
             conn.close()
-            return self._json(200, {
-                'items': rows,
-                'isAdmin': bool(session and session['mode'] == 'user' and session['username'].lower() in ADMIN_USERS),
-            })
+            return self._json(
+                200,
+                {
+                    'items': rows,
+                    'isAdmin': bool(session and session['mode'] == 'user' and session['username'].lower() in ADMIN_USERS),
+                },
+            )
 
         return super().do_GET()
 

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WhatsApp Zugang – La Familia DE</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body data-page="whatsapp">
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a class="logo-badge" href="index.html">La Familia</a>
+      <a class="btn ghost" href="index.html">Zurück zur Startseite</a>
+    </div>
+  </header>
+
+  <main class="container app-shell">
+    <section class="card policy-card">
+      <h1>WhatsApp Community Zugang</h1>
+      <p>
+        Willkommen bei La Familia - der besten Latino Community in Deutschland 🌍<br />
+        Über dieses Formular kannst du Zugang zu unserer WhatsApp Community erhalten, in der wir Events,
+        Treffen und Informationen rund um unsere Community teilen und ihr euch untereinander connecten könnt.
+      </p>
+      <p>
+        ⚠️ Die Teilnahme ist ausschließlich für Personen ab 16 Jahren möglich.<br />
+        Mit dem Absenden bestätigst du, dass du mindestens 16 Jahre alt bist.
+      </p>
+
+      <h3>Community Regeln</h3>
+      <ul>
+        <li>Respektvoller Umgang - kein Hate, keine Diskriminierung</li>
+        <li>Kein Spam oder unerlaubte Werbung</li>
+        <li>Keine illegalen oder unangemessenen Inhalte</li>
+        <li>Telefonnummern sind für Mitglieder sichtbar</li>
+        <li>Bei Regelverstoß erfolgt Ausschluss durch das Admin-Team</li>
+      </ul>
+
+      <p>
+        Deine Angaben werden ausschließlich zur Organisation und Verwaltung der Community verwendet und nicht an Dritte weitergegeben.
+      </p>
+
+      <hr />
+
+      <p>
+        Bienvenido a La Familia – la mejor comunidad latina en Alemania 🌍<br />
+        A través de este formulario puedes obtener acceso a nuestra comunidad de WhatsApp, donde compartimos eventos,
+        encuentros e información sobre nuestra comunidad, y donde pueden conectarse entre ustedes.
+      </p>
+      <p>
+        ⚠️ La participación está permitida únicamente para personas mayores de 16 años.<br />
+        Al enviar el formulario confirmas que tienes al menos 16 años.
+      </p>
+
+      <h3>Reglas de la comunidad</h3>
+      <ul>
+        <li>Respeto mutuo – no se permite hate ni discriminación</li>
+        <li>No spam ni publicidad no autorizada</li>
+        <li>No contenido ilegal o inapropiado</li>
+        <li>Los números de teléfono son visibles para los miembros</li>
+        <li>En caso de incumplimiento de las reglas, el equipo de administración podrá excluir al miembro</li>
+      </ul>
+
+      <p>
+        Tus datos se utilizarán exclusivamente para la organización y gestión de la comunidad y no serán compartidos con terceros.
+      </p>
+
+      <form id="wa-consent-form" class="consent-form">
+        <label class="check-row">
+          <input id="check-rules" type="checkbox" required />
+          <span>Ich habe die Community Regeln gelesen und akzeptiere sie. | He leído las reglas de la comunidad y las acepto.</span>
+        </label>
+
+        <label class="check-row">
+          <input id="check-age" type="checkbox" required />
+          <span>Ich bestätige wahrheitsgemäß, dass ich mindestens 16 Jahre alt bin | Confirmo de manera veraz que tengo al menos 16 años.</span>
+        </label>
+
+        <button id="join-wa-btn" class="btn" type="submit" disabled>Zur WhatsApp Community</button>
+      </form>
+    </section>
+  </main>
+
+  <script>
+    const rules = document.getElementById('check-rules');
+    const age = document.getElementById('check-age');
+    const button = document.getElementById('join-wa-btn');
+    const form = document.getElementById('wa-consent-form');
+    const target = 'https://chat.whatsapp.com/Edw1f72kqQkHcaEIGsy6ge?utm_source=igios&utm_campaign=wa_communities_url_xma&source_surface=25';
+
+    const sync = () => {
+      button.disabled = !(rules.checked && age.checked);
+    };
+
+    rules.addEventListener('change', sync);
+    age.addEventListener('change', sync);
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      if (button.disabled) return;
+      window.open(target, '_blank', 'noopener,noreferrer');
+    });
+  </script>
+</body>
+</html>

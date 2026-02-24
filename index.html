@@ -4,103 +4,132 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>La Familia DE – Latino Community Deutschland</title>
-  <meta
-    name="description"
-    content="La Familia DE ist die größte Latino Community in Deutschland: News, Events auf der Deutschlandkarte und direkte Links zu WhatsApp, Instagram und den Gründern."
-  />
+  <meta name="description" content="La Familia DE – Login, Events in Deutschland, Galerie und Community-Infos." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Pacifico&display=swap"
-    rel="stylesheet"
-  />
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-    crossorigin=""
-  />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Pacifico&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <header class="hero">
-    <div class="overlay"></div>
-    <nav class="top-nav container">
-      <h1 class="brand">La Familia DE</h1>
-    </nav>
+  <div id="auth-screen" class="auth-screen">
+    <div class="auth-card">
+      <h1>La Familia DE</h1>
+      <p>Willkommen! Bitte anmelden, neuen Account erstellen oder ohne Anmeldung fortfahren.</p>
 
-    <section class="hero-content container">
-      <p class="label">Die größte Latino Community in Deutschland</p>
-      <h2>Noticias, Eventos y Buena Vibra ✨</h2>
-      <div class="flags" aria-label="Latino Flaggen Deko">🇨🇴 🇻🇪 🇵🇪 🇪🇨 🇨🇱 🇧🇷 🇩🇴 🇵🇦</div>
-      <p>
-        Willkommen bei <strong>La Familia DE</strong> – dein Ort für Latino-News,
-        deutschlandweite Events und direkte Verbindungen zur Community.
-      </p>
-      <div class="hero-links">
-        <a href="https://www.instagram.com/la_familia.de?igsh=MWZxd2RjMWV0aXFsaw%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer">Instagram Community</a>
-        <a href="https://chat.whatsapp.com/Edw1f72kqQkHcaEIGsy6ge?utm_source=igios&utm_campaign=wa_communities_url_xma&source_surface=25" target="_blank" rel="noopener noreferrer">Jetzt WhatsApp beitreten</a>
+      <div class="auth-tabs">
+        <button data-auth-tab="login" class="active">Anmelden</button>
+        <button data-auth-tab="register">Neuen Account erstellen</button>
+        <button data-auth-tab="guest">Ohne Anmeldung fortfahren</button>
       </div>
-    </section>
+
+      <form id="login-form" class="auth-form active">
+        <label>Username <input type="text" name="username" required /></label>
+        <label>Code / Passwort <input type="password" name="password" required /></label>
+        <button type="submit" class="btn">Anmelden</button>
+      </form>
+
+      <form id="register-form" class="auth-form">
+        <label>Username eingeben <input type="text" name="username" required /></label>
+        <label>Passwort eingeben <input type="password" name="password" required /></label>
+        <label>Herkunft <input type="text" name="origin" required /></label>
+        <label>Bundesland (Wohnort) <input type="text" name="state" required /></label>
+        <button type="submit" class="btn">Account erstellen</button>
+      </form>
+
+      <div id="guest-pane" class="auth-form">
+        <p>Du kannst die Startseite sehen. Events-Karte und Galerie sind mit Login freigeschaltet.</p>
+        <button id="continue-guest" class="btn ghost" type="button">Ohne Anmeldung fortfahren</button>
+      </div>
+
+      <p id="auth-message" class="auth-message"></p>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <div class="brand-block">
+        <div class="logo-badge">🌴 LA FAMILIA</div>
+        <small>Latino-German Community</small>
+      </div>
+      <button id="menu-toggle" class="menu-toggle" aria-label="Menü öffnen">☰</button>
+      <nav id="site-nav" class="site-nav">
+        <a href="#start">Startseite</a>
+        <a href="#events">Events</a>
+        <a href="#gallery">Galerie</a>
+        <a href="#about">Über uns</a>
+      </nav>
+      <button id="logout-btn" class="btn tiny">Abmelden</button>
+    </div>
   </header>
 
-  <main>
-    <section class="news container card">
-      <div>
-        <p class="section-tag">News</p>
-        <h3>Was ist gerade los in der Community?</h3>
-        <p>
-          Hier findest du aktuelle Updates, Event-Highlights und Community-News von
-          <strong>La Familia DE</strong>. Folge uns auf Instagram, um keine Stories,
-          Reels oder Event-Announcements zu verpassen.
-        </p>
-      </div>
-      <a class="btn" href="https://www.instagram.com/la_familia.de?igsh=MWZxd2RjMWV0aXFsaw%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer">Zu den News auf Instagram</a>
-    </section>
-
-    <section class="map-section container">
-      <div class="map-header">
-        <p class="section-tag">Events Karte</p>
-        <h3>Latino Events in ganz Deutschland</h3>
-        <p>Klicke auf die Marker, um Event-Beispiele in verschiedenen Städten zu sehen.</p>
-      </div>
-      <div id="map" aria-label="Deutschlandkarte mit Event-Markern"></div>
-    </section>
-
-    <section class="community container card split">
-      <div>
-        <p class="section-tag">Community</p>
-        <h3>Verbinde dich mit La Familia</h3>
-        <p>
-          Werde Teil der größten Latino Community in Deutschland und connecte dich
-          direkt über WhatsApp und Social Media.
-        </p>
-      </div>
-      <div class="links-grid">
-        <a class="btn" href="https://chat.whatsapp.com/Edw1f72kqQkHcaEIGsy6ge?utm_source=igios&utm_campaign=wa_communities_url_xma&source_surface=25" target="_blank" rel="noopener noreferrer">WhatsApp Community</a>
-        <a class="btn ghost" href="https://www.instagram.com/la_familia.de?igsh=MWZxd2RjMWV0aXFsaw%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer">La Familia Instagram</a>
+  <main class="container app-shell">
+    <section id="start" class="card intro">
+      <h2>Bienvenidos a La Familia DE</h2>
+      <p>Die größte Latino Community in Deutschland. Wir verbinden Menschen, Kulturen, Musik und Events mit echter Familia-Energie.</p>
+      <div class="quick-links">
+        <a class="btn" target="_blank" rel="noopener noreferrer" href="https://www.instagram.com/la_familia.de?igsh=MWZxd2RjMWV0aXFsaw%3D%3D&utm_source=qr">Instagram Community</a>
+        <a class="btn" target="_blank" rel="noopener noreferrer" href="https://chat.whatsapp.com/Edw1f72kqQkHcaEIGsy6ge?utm_source=igios&utm_campaign=wa_communities_url_xma&source_surface=25">WhatsApp Community</a>
       </div>
     </section>
 
-    <section class="founder container card">
-      <p class="section-tag">Gründer</p>
-      <h3>Giovanni Oderso</h3>
-      <div class="founder-links">
-        <a href="https://www.instagram.com/giovanni_mogito?igsh=ZmRjMzhkZmtueWMx" target="_blank" rel="noopener noreferrer">Instagram</a>
-        <a href="https://www.tiktok.com/@giovannioderso?_r=1&_t=ZG-94A7AY2WstN" target="_blank" rel="noopener noreferrer">TikTok</a>
+    <section id="events" class="card">
+      <h3>Events</h3>
+      <div class="restricted" data-restricted="events">
+        <div id="map"></div>
+        <div class="lock-overlay">
+          <p>Für diese Funktion anmelden.</p>
+          <button class="btn open-auth" type="button">Zum Anmelden</button>
+        </div>
+      </div>
+      <div class="news-list">
+        <h4>News</h4>
+        <ul>
+          <li>Berlin: Reggaeton Night am Freitag.</li>
+          <li>Köln: Latin Street Food Wochenende.</li>
+          <li>Hamburg: Salsa Social Samstagabend.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="gallery" class="card">
+      <h3>Galerie</h3>
+      <div class="restricted" data-restricted="gallery">
+        <form id="gallery-form" class="upload-form">
+          <label>Bild hochladen (wird von Admins geprüft)
+            <input type="file" name="image" accept="image/*" required />
+          </label>
+          <button class="btn" type="submit">Hochladen zur Prüfung</button>
+        </form>
+        <div>
+          <h4>Freigegebene Uploads</h4>
+          <ul id="approved-list"></ul>
+          <h4>Wartet auf Freigabe</h4>
+          <ul id="pending-list"></ul>
+        </div>
+        <div id="admin-review" class="admin-review"></div>
+        <div class="lock-overlay">
+          <p>Für diese Funktion anmelden.</p>
+          <button class="btn open-auth" type="button">Zum Anmelden</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="about" class="card">
+      <h3>Über uns</h3>
+      <div class="team-grid">
+        <article><h4>CEO: Giovanni Oderso</h4><a target="_blank" rel="noopener noreferrer" href="https://www.instagram.com/giovanni_mogito?igsh=ZmRjMzhkZmtueWMx">Instagram</a><a target="_blank" rel="noopener noreferrer" href="https://www.tiktok.com/@giovannioderso?_r=1&_t=ZG-94A7AY2WstN">TikTok</a></article>
+        <article><h4>CFO: Ricardo</h4><a target="_blank" rel="noopener noreferrer" href="https://www.instagram.com/r1cardo737?igsh=MTJvejVieWozazRvdw==">Instagram</a><a target="_blank" rel="noopener noreferrer" href="https://www.tiktok.com/@r1cardo063?_r=1&_t=ZG-94C2XtETdk8">TikTok</a></article>
+        <article><h4>Valentina</h4><a target="_blank" rel="noopener noreferrer" href="https://www.instagram.com/valentina.arg00?igsh=MTNteHZ6cHZhc2plaQ==">Instagram</a><a target="_blank" rel="noopener noreferrer" href="https://www.tiktok.com/@valentina.arg00?_r=1&_t=ZG-94C2nyVoR2O">TikTok</a></article>
+        <article><h4>Filippo</h4><a target="_blank" rel="noopener noreferrer" href="https://www.instagram.com/filippo.302?igsh=MXRibzlqN3k3Y3pwbg==">Instagram</a><a target="_blank" rel="noopener noreferrer" href="https://www.tiktok.com/@k.munq?_r=1&_t=ZG-94C2wKkFeL3">TikTok</a></article>
+        <article><h4>Cassandra</h4><a target="_blank" rel="noopener noreferrer" href="https://www.instagram.com/cassa.agl?igsh=NDc4dW9vcWx6NHAy">Instagram</a><a target="_blank" rel="noopener noreferrer" href="https://www.tiktok.com/@cassa.aguilar?_r=1&_t=ZG-94C3OsYx5Oq">TikTok</a></article>
+        <article><h4>Kilian Ariel</h4><a target="_blank" rel="noopener noreferrer" href="https://www.instagram.com/aechriel?igsh=aW8wc3RnNnJwd2xw">Instagram</a><a target="_blank" rel="noopener noreferrer" href="https://www.tiktok.com/@aechriel?_r=1&_t=ZG-94C385nGkSm">TikTok</a></article>
+        <article><h4>Andy</h4><a target="_blank" rel="noopener noreferrer" href="https://www.instagram.com/andy.urt?igsh=cXQya2hnZnplOGs5">Instagram</a><a target="_blank" rel="noopener noreferrer" href="https://www.tiktok.com/@andy.urt?_r=1&_t=ZG-94C3lLhw1RI">TikTok</a></article>
       </div>
     </section>
   </main>
 
-  <footer class="footer">
-    <p>Hecho con ❤️ y sabor latino • La Familia DE</p>
-  </footer>
-
-  <script
-    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-    crossorigin=""
-  ></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script src="script.js"></script>
 </body>
 </html>

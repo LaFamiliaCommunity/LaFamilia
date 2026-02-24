@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Startseite - La Familia DE</title>
+  <title>Galerie - La Familia DE</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
-<body data-page="start">
+<body data-page="gallery">
   <header class="site-header">
     <div class="container nav-wrap">
       <div class="logo-badge">🌴 La Familia</div>
@@ -23,11 +23,25 @@
 
   <main class="container app-shell">
     <section class="card">
-      <h1>Bienvenidos a La Familia DE</h1>
-      <p>Die größte Latino Community in Deutschland.</p>
-      <div class="quick-links">
-        <a class="btn" href="https://www.instagram.com/la_familia.de?igsh=MWZxd2RjMWV0aXFsaw%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer">Instagram Community</a>
-        <a class="btn" href="https://chat.whatsapp.com/Edw1f72kqQkHcaEIGsy6ge?utm_source=igios&utm_campaign=wa_communities_url_xma&source_surface=25" target="_blank" rel="noopener noreferrer">WhatsApp Community</a>
+      <h2>Galerie</h2>
+      <div class="restricted" data-restricted="gallery">
+        <form id="gallery-form" class="upload-form">
+          <label>Bild hochladen (Admins prüfen)
+            <input type="file" name="image" required />
+          </label>
+          <button class="btn" type="submit">Hochladen zur Prüfung</button>
+        </form>
+
+        <h4>Freigegeben</h4>
+        <ul id="approved-list"></ul>
+        <h4>Ausstehend</h4>
+        <ul id="pending-list"></ul>
+        <div id="admin-review" class="admin-review"></div>
+
+        <div class="lock-overlay">
+          <p>Für diese Funktion anmelden.</p>
+          <a class="btn" href="auth.html">Zum Anmelden</a>
+        </div>
       </div>
     </section>
   </main>

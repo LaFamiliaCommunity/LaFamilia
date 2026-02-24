@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - La Familia DE</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="auth-page-wrap">
+    <div class="auth-card">
+      <h1>La Familia DE</h1>
+      <p>Anmelden, neuen Account erstellen oder ohne Anmeldung fortfahren.</p>
+
+      <div class="auth-tabs">
+        <button data-auth-tab="login" class="active">Anmelden</button>
+        <button data-auth-tab="register">Neuen Account erstellen</button>
+        <button data-auth-tab="guest">Ohne Anmeldung fortfahren</button>
+      </div>
+
+      <form id="login-form" class="auth-form active">
+        <label>Username <input name="username" required /></label>
+        <label>Code / Passwort <input name="password" type="password" required /></label>
+        <button class="btn" type="submit">Anmelden</button>
+      </form>
+
+      <form id="register-form" class="auth-form">
+        <label>Username eingeben <input name="username" required /></label>
+        <label>Passwort eingeben <input name="password" type="password" required /></label>
+        <label>Herkunft <input name="origin" required /></label>
+        <label>Bundesland (Wohnort) <input name="state" required /></label>
+        <button class="btn" type="submit">Account erstellen</button>
+      </form>
+
+      <div id="guest-pane" class="auth-form">
+        <p>Als Gast bleiben Karte und Galerie gesperrt.</p>
+        <button id="continue-guest" type="button" class="btn ghost">Ohne Anmeldung fortfahren</button>
+      </div>
+
+      <p id="auth-message" class="auth-message"></p>
+    </div>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>

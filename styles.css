@@ -1,17 +1,16 @@
+
 :root {
-  --sky: #dff4ff;
-  --sea: #8edbff;
-  --foam: #ffffff;
-  --sand: #ffe5b8;
-  --leaf: #39b76c;
-  --sun: #ffd84d;
-  --text: #163047;
-  --muted: #4a667f;
-  --panel: rgba(255, 255, 255, 0.78);
-  --panel-strong: rgba(255, 255, 255, 0.9);
-  --line: rgba(22, 48, 71, 0.16);
-  --accent: #1a9fe0;
-  --danger: #d94a4a;
+  --bg: #ffffff;
+  --text: #111111;
+  --muted: #4b4b4b;
+  --panel: #ffffff;
+  --panel-strong: #ffffff;
+  --line: rgba(0, 0, 0, 0.12);
+  --btn-red-1: #7e0f17;
+  --btn-red-2: #4f060d;
+  --banner-1: #7b0d15;
+  --banner-2: #3f050a;
+  --danger: #b10017;
 }
 
 * { box-sizing: border-box; }
@@ -20,22 +19,8 @@ body {
   margin: 0;
   font-family: Montserrat, sans-serif;
   color: var(--text);
-  background:
-    radial-gradient(circle at 8% 14%, rgba(255, 216, 77, 0.45), transparent 30%),
-    radial-gradient(circle at 92% 10%, rgba(57, 183, 108, 0.25), transparent 30%),
-    radial-gradient(circle at 22% 86%, rgba(255, 103, 103, 0.24), transparent 26%),
-    linear-gradient(180deg, var(--sky) 0%, var(--sea) 45%, #7ecbe8 62%, var(--sand) 100%);
+  background: var(--bg);
   min-height: 100vh;
-}
-
-body::before {
-  content: '🌴';
-  position: fixed;
-  right: 18px;
-  bottom: 10px;
-  font-size: 34px;
-  opacity: 0.35;
-  pointer-events: none;
 }
 
 .container { width: min(1080px, 92vw); margin: 0 auto; }
@@ -45,25 +30,24 @@ body::before {
   position: sticky;
   top: 0;
   z-index: 1000;
-  background: rgba(255, 255, 255, 0.72);
-  border-bottom: 1px solid var(--line);
-  backdrop-filter: blur(8px);
+  background: linear-gradient(90deg, var(--banner-1), var(--banner-2));
+  border-bottom: 1px solid rgba(255,255,255,.18);
 }
 
 .nav-wrap { display: flex; align-items: center; gap: .6rem; padding: .7rem 0; }
 
 .logo-badge {
   text-decoration: none;
-  color: var(--text);
+  color: #fff;
   font-weight: 800;
   letter-spacing: .03em;
 }
 
 .menu-toggle {
   margin-left: auto;
-  border: 1px solid var(--line);
-  background: rgba(255,255,255,.8);
-  color: var(--text);
+  border: 1px solid rgba(255,255,255,.3);
+  background: rgba(255,255,255,.15);
+  color: #fff;
   border-radius: 8px;
   padding: .35rem .55rem;
 }
@@ -73,7 +57,7 @@ body::before {
   position: absolute;
   right: 68px;
   top: 54px;
-  background: var(--panel-strong);
+  background: #ffffff;
   border: 1px solid var(--line);
   border-radius: 10px;
   padding: .4rem;
@@ -82,13 +66,13 @@ body::before {
 .site-nav.open { display: grid; }
 
 .site-nav a {
-  color: var(--text);
+  color: #111;
   text-decoration: none;
   padding: .34rem .45rem;
   border-radius: 8px;
 }
 
-.site-nav a:hover { background: rgba(26, 159, 224, .1); }
+.site-nav a:hover { background: rgba(0,0,0,.06); }
 
 .profile-shell { margin-left: auto; position: relative; }
 
@@ -96,9 +80,8 @@ body::before {
   width: 42px;
   height: 42px;
   border-radius: 50%;
-  border: 2px solid transparent;
-  background: linear-gradient(var(--foam), var(--foam)) padding-box,
-    linear-gradient(135deg, #f24f4f, #ffffff, #4fa2ff, #40c975, #ffd84d) border-box;
+  border: 2px solid rgba(255,255,255,.5);
+  background: #fff;
   overflow: hidden;
   padding: 0;
   cursor: pointer;
@@ -124,7 +107,7 @@ body::before {
 
 .menu-action {
   border: 1px solid var(--line);
-  background: rgba(255,255,255,.7);
+  background: #fff;
   color: var(--text);
   border-radius: 8px;
   padding: .45rem .55rem;
@@ -142,6 +125,12 @@ body::before {
 }
 
 .hero-card { text-align: center; }
+body[data-page="start"] .hero-card {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  padding: .2rem 0;
+}
 
 .hero-logo,
 .auth-logo {
@@ -156,9 +145,9 @@ body::before {
 .quick-links { display: flex; flex-wrap: wrap; justify-content: center; gap: .6rem; margin-top: .8rem; }
 
 .btn {
-  border: 1px solid rgba(0,0,0,.07);
-  background: linear-gradient(90deg, #f24f4f, #4fa2ff, #40c975, #ffd84d);
-  color: #0d2233;
+  border: 1px solid rgba(0,0,0,.15);
+  background: linear-gradient(90deg, var(--btn-red-1), var(--btn-red-2));
+  color: #fff;
   font-weight: 700;
   border-radius: 8px;
   padding: .58rem .9rem;
@@ -166,7 +155,7 @@ body::before {
   cursor: pointer;
 }
 
-.btn.ghost { background: rgba(255,255,255,.8); color: var(--text); border-color: var(--line); }
+.btn.ghost { background: #fff; color: var(--text); border-color: var(--line); }
 
 .auth-page-wrap { min-height: 100vh; display: grid; place-items: center; padding: 1rem; }
 
@@ -182,15 +171,15 @@ body::before {
 
 .auth-tabs button {
   border: 1px solid var(--line);
-  background: rgba(255,255,255,.8);
+  background: #fff;
   color: var(--text);
   border-radius: 8px;
   padding: .45rem .65rem;
 }
 
 .auth-tabs button.active {
-  background: linear-gradient(90deg, #f24f4f, #4fa2ff, #40c975, #ffd84d);
-  color: #0d2233;
+  background: linear-gradient(90deg, var(--btn-red-1), var(--btn-red-2));
+  color: #fff;
 }
 
 .auth-form { display: none; gap: .6rem; }
@@ -201,7 +190,7 @@ body::before {
 .auth-form input {
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: rgba(255,255,255,.92);
+  background: #fff;
   color: var(--text);
   padding: .55rem;
 }
@@ -219,7 +208,7 @@ body::before {
   gap: .5rem;
   text-align: center;
   border-radius: 10px;
-  background: rgba(255,255,255,.56);
+  background: rgba(255,255,255,.72);
   z-index: 1200;
 }
 
@@ -241,11 +230,11 @@ body.is-guest [data-restricted="gallery"] .lock-overlay { display: grid; }
 #pending-list { margin: .4rem 0 0 1rem; }
 
 .upload-form { display: grid; gap: .55rem; }
-.admin-item { border: 1px solid var(--line); border-radius: 8px; padding: .5rem; margin-bottom: .35rem; background: rgba(255,255,255,.6); }
+.admin-item { border: 1px solid var(--line); border-radius: 8px; padding: .5rem; margin-bottom: .35rem; background: #fff; }
 
 .team-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: .7rem; }
-.team-grid article { background: rgba(255,255,255,.65); border: 1px solid var(--line); border-radius: 10px; padding: .6rem; }
-.team-grid a { color: #0f74b6; margin-right: .6rem; }
+.team-grid article { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: .6rem; }
+.team-grid a { color: #7b0d15; margin-right: .6rem; }
 
 .policy-card h1 { margin-top: .1rem; }
 .policy-card hr { border: 0; border-top: 1px solid var(--line); margin: 1rem 0; }
@@ -265,5 +254,7 @@ body.is-guest [data-restricted="gallery"] .lock-overlay { display: grid; }
     background: transparent;
     gap: .35rem;
   }
+  .site-nav a { color: #fff; }
+  .site-nav a:hover { background: rgba(255,255,255,.16); }
   .profile-shell { margin-left: 0; }
 }

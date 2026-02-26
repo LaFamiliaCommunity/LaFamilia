@@ -115,7 +115,7 @@ function fallbackGalleryList(session) {
 
 function fallbackGalleryUpload(session, fileName) {
   const items = readJSON(LS_GALLERY_KEY, []);
-  items.unshift({ id: Date.now(), username: session.username, file_name: fileName, status: 'pending' });
+  items.unshift({ id: Date.now(), username: session.username, file_name: fileName, status: 'approved' });
   writeJSON(LS_GALLERY_KEY, items);
 }
 

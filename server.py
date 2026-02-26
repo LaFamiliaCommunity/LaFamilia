@@ -191,7 +191,7 @@ class Handler(SimpleHTTPRequestHandler):
                 return self._json(400, {'error': 'Dateiname fehlt.'})
             conn = sqlite3.connect(DB_PATH)
             cur = conn.cursor()
-            cur.execute('INSERT INTO gallery (username, file_name, status) VALUES (?, ?, ?)', (session['username'], file_name, 'pending'))
+            cur.execute('INSERT INTO gallery (username, file_name, status) VALUES (?, ?, ?)', (session['username'], file_name, 'approved'))
             conn.commit()
             conn.close()
             return self._json(200, {'ok': True})

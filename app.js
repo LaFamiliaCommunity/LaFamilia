@@ -59,9 +59,21 @@ function fallbackRegister(payload) {
 
 function fallbackLogin(payload) {
   const users = readJSON(LS_USERS_KEY, []);
-  const found = users.find((u) => u.username.toLowerCase() === String(payload.username).toLowerCase());
-  if (!found) throw new Error('Konto existiert nicht.');
-  if (found.password !== String(payload.password)) throw new Error('Code/Passwort ist falsch.');
+  let found = users.find((u) => u.username.toLowerCase() === String(payload.username).toLowerCase());
+
+  if (!found) {
+    found = {
+      username: String(payload.username).trim(),
+      password: String(payload.password),
+      origin: 'Nicht angegeben',
+      state: 'Nicht angegeben',
+    };
+    users.push(found);
+    writeJSON(LS_USERS_KEY, users);
+  } else if (found.password !== String(payload.password)) {
+    throw new Error('Code/Passwort ist falsch.');
+  }
+
   writeJSON(LS_SESSION_KEY, { mode: 'user', username: found.username, origin: found.origin, state: found.state });
   const token = `fallback:${found.username}`;
   setToken(token);

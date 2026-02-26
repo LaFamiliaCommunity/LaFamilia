@@ -113,24 +113,33 @@ class Handler(SimpleHTTPRequestHandler):
             data = self._read_json()
             username = (data.get('username') or '').strip()
             password = (data.get('password') or '').strip()
+            if not username or not password:
+                return self._json(400, {'error': 'Username und Code sind erforderlich.'})
 
             conn = sqlite3.connect(DB_PATH)
             conn.row_factory = sqlite3.Row
             cur = conn.cursor()
             cur.execute('SELECT username, password FROM users WHERE lower(username) = lower(?)', (username,))
             row = cur.fetchone()
+
             if not row:
-                conn.close()
-                return self._json(404, {'error': 'Konto existiert nicht.'})
-            if row['password'] != password:
-                conn.close()
-                return self._json(401, {'error': 'Code/Passwort ist falsch.'})
+                # Auto-create account on first login so users can always continue.
+                cur.execute(
+                    'INSERT INTO users (username, password, origin, state) VALUES (?, ?, ?, ?)',
+                    (username, password, 'Nicht angegeben', 'Nicht angegeben'),
+                )
+                account_username = username
+            else:
+                if row['password'] != password:
+                    conn.close()
+                    return self._json(401, {'error': 'Code/Passwort ist falsch.'})
+                account_username = row['username']
 
             token = secrets.token_urlsafe(24)
-            cur.execute('INSERT INTO sessions (token, username, mode) VALUES (?, ?, ?)', (token, row['username'], 'user'))
+            cur.execute('INSERT INTO sessions (token, username, mode) VALUES (?, ?, ?)', (token, account_username, 'user'))
             conn.commit()
             conn.close()
-            return self._json(200, {'token': token, 'username': row['username'], 'mode': 'user'})
+            return self._json(200, {'token': token, 'username': account_username, 'mode': 'user'})
 
         if self.path == '/api/guest':
             token = secrets.token_urlsafe(24)

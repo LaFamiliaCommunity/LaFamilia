@@ -122,66 +122,51 @@ function setupAuthPage() {
     document.querySelectorAll('[data-auth-tab]').forEach((b) => b.classList.toggle('active', b.dataset.authTab === tab));
     document.querySelectorAll('.auth-form').forEach((f) => f.classList.remove('active'));
     if (tab === 'login') document.getElementById('login-form').classList.add('active');
-    if (tab === 'register') document.getElementById('register-form').classList.add('active');
     if (tab === 'guest') document.getElementById('guest-pane').classList.add('active');
     msg.textContent = '';
   };
   document.querySelectorAll('[data-auth-tab]').forEach((btn) => (btn.onclick = () => setTab(btn.dataset.authTab)));
 
-  document.getElementById('login-form').onsubmit = async (e) => {
-    e.preventDefault();
-    const d = new FormData(e.target);
-    const payload = { username: d.get('username'), password: d.get('password') };
-    try {
-      let data;
+  const loginForm = document.getElementById('login-form');
+  if (loginForm) {
+    loginForm.onsubmit = async (e) => {
+      e.preventDefault();
+      const d = new FormData(e.target);
+      const payload = { username: d.get('username'), password: d.get('password') };
       try {
-        data = await api('/api/login', 'POST', payload);
+        let data;
+        try {
+          data = await api('/api/login', 'POST', payload);
+        } catch (err) {
+          if (String(err.message).includes('Failed to fetch') || String(err.message) === 'Fehler') data = fallbackLogin(payload);
+          else throw err;
+        }
+        setToken(data.token);
+        location.href = 'index.html';
       } catch (err) {
-        if (String(err.message).includes('Failed to fetch') || String(err.message) === 'Fehler') data = fallbackLogin(payload);
-        else throw err;
+        msg.textContent = err.message;
       }
-      setToken(data.token);
-      location.href = 'index.html';
-    } catch (err) {
-      msg.textContent = err.message;
-    }
-  };
+    };
+  }
 
-  document.getElementById('register-form').onsubmit = async (e) => {
-    e.preventDefault();
-    const d = new FormData(e.target);
-    const payload = { username: d.get('username'), password: d.get('password'), origin: d.get('origin'), state: d.get('state') };
-    try {
-      let data;
+  const guestBtn = document.getElementById('continue-guest');
+  if (guestBtn) {
+    guestBtn.onclick = async () => {
       try {
-        data = await api('/api/register', 'POST', payload);
+        let data;
+        try {
+          data = await api('/api/guest', 'POST', {});
+        } catch {
+          data = fallbackGuest();
+        }
+        setToken(data.token);
+        location.href = 'index.html';
       } catch (err) {
-        if (String(err.message).includes('Failed to fetch') || String(err.message) === 'Fehler') data = fallbackRegister(payload);
-        else throw err;
+        msg.textContent = err.message;
       }
-      setToken(data.token);
-      location.href = 'index.html';
-    } catch (err) {
-      msg.textContent = err.message;
-    }
-  };
-
-  document.getElementById('continue-guest').onclick = async () => {
-    try {
-      let data;
-      try {
-        data = await api('/api/guest', 'POST', {});
-      } catch {
-        data = fallbackGuest();
-      }
-      setToken(data.token);
-      location.href = 'index.html';
-    } catch (err) {
-      msg.textContent = err.message;
-    }
-  };
+    };
+  }
 }
-
 async function resolveSession() {
   if (location.pathname.endsWith('auth.html') || location.pathname === '/auth.html') return null;
 

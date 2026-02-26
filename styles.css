@@ -177,6 +177,8 @@ p { line-height: 1.65; }
   margin-top: .95rem;
 }
 
+.quick-links .btn { min-width: 170px; text-align: center; }
+
 .btn {
   border: 0;
   background: linear-gradient(90deg, var(--red-1), var(--red-2));

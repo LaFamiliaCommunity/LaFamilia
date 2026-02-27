@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Events - La Familia DE</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body data-page="events">
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a class="logo-badge" href="index.html">La Familia</a>
+      <button id="menu-toggle" class="menu-toggle">☰</button>
+      <nav id="site-nav" class="site-nav">
+        <a href="index.html">Startseite</a>
+        <a href="events.html">Events</a>
+        <a href="gallery.html">Galerie</a>
+        <a href="about.html">Über uns</a>
+      </nav>
+      <div class="profile-shell">
+        <button id="profile-trigger" class="profile-trigger" aria-label="Profil öffnen">
+          <img src="https://i.imgur.com/lq2S7Mf.png" alt="La Familia Logo" />
+        </button>
+        <div id="profile-dropdown" class="profile-dropdown">
+          <p id="profile-name">@user</p>
+          <button id="edit-profile-btn" class="menu-action" type="button">Profil bearbeiten</button>
+          <button id="logout-btn" class="menu-action danger" type="button">Abmelden</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container app-shell">
+    <section class="card">
+      <h2>Events</h2>
+      <div class="restricted" data-restricted="events">
+        <div id="map"></div>
+        <div class="lock-overlay">
+          <p>Für diese Funktion anmelden.</p>
+          <a class="btn" href="auth.html">Zum Anmelden</a>
+        </div>
+      </div>
+
+      <div class="news-list">
+        <h3>News</h3>
+        <ul>
+          <li>Berlin: Reggaeton Night.</li>
+          <li>Köln: Latin Street Food.</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

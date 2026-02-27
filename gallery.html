@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Galerie - La Familia DE</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body data-page="gallery">
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a class="logo-badge" href="index.html">La Familia</a>
+      <button id="menu-toggle" class="menu-toggle">☰</button>
+      <nav id="site-nav" class="site-nav">
+        <a href="index.html">Startseite</a>
+        <a href="events.html">Events</a>
+        <a href="gallery.html">Galerie</a>
+        <a href="about.html">Über uns</a>
+      </nav>
+      <div class="profile-shell">
+        <button id="profile-trigger" class="profile-trigger" aria-label="Profil öffnen">
+          <img src="https://i.imgur.com/lq2S7Mf.png" alt="La Familia Logo" />
+        </button>
+        <div id="profile-dropdown" class="profile-dropdown">
+          <p id="profile-name">@user</p>
+          <button id="edit-profile-btn" class="menu-action" type="button">Profil bearbeiten</button>
+          <button id="logout-btn" class="menu-action danger" type="button">Abmelden</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container app-shell">
+    <section class="card">
+      <h2>Galerie</h2>
+      <div class="restricted" data-restricted="gallery">
+        <form id="gallery-form" class="upload-form">
+          <label>Bild hochladen (direkt sichtbar, ohne Admin-Prüfung)
+            <input type="file" name="image" required />
+          </label>
+          <button class="btn" type="submit">Hochladen</button>
+        </form>
+
+        <h4>Freigegeben</h4>
+        <ul id="approved-list"></ul>
+        <h4>Ausstehend</h4>
+        <ul id="pending-list"></ul>
+        <div id="admin-review" class="admin-review"></div>
+
+        <div class="lock-overlay">
+          <p>Für diese Funktion anmelden.</p>
+          <a class="btn" href="auth.html">Zum Anmelden</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
